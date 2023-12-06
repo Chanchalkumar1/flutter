@@ -1,0 +1,172 @@
+import 'package:flutter/material.dart';
+
+void main() => runApp(QuizApp());
+
+class QuizApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Quiz App',
+      home: QuizScreen(),
+    );
+  }
+}
+
+class QuizScreen extends StatefulWidget {
+  @override
+  _QuizScreenState createState() => _QuizScreenState();
+}
+
+class _QuizScreenState extends State<QuizScreen> {
+  int _questionIndex = 0;
+  int _totalScore = 0;
+
+  final List<Map<String, dynamic>> _questions = [
+    {
+      'questionText': 'What is the capital of France?',
+      'answers': [
+        {'text': 'Paris', 'score': 10},
+        {'text': 'London', 'score': 0},
+        {'text': 'Rome', 'score': 0},
+        {'text': 'Berlin', 'score': 0},
+      ],
+    },
+    {
+      'questionText': 'Who painted the Mona Lisa?',
+      'answers': [
+        {'text': 'Leonardo da Vinci', 'score': 10},
+        {'text': 'Pablo Picasso', 'score': 0},
+        {'text': 'Vincent van Gogh', 'score': 0},
+        {'text': 'Michelangelo', 'score': 0},
+      ],
+    },
+    {
+      'questionText': 'What is the Capital of India?',
+      'answers': [
+        {'text': 'Tamil nadu', 'score': 0},
+        {'text': 'Mumbai', 'score': 0},
+        {'text': 'Punjab', 'score': 0},
+        {'text': 'Delhi', 'score': 10},
+      ],
+    },
+    {
+      'questionText': 'Who was the first President of India?',
+      'answers': [
+        {'text': 'Lal Bahadur Shastri', 'score': 0},
+        {'text': 'DR.Rajendra Prasad', 'score': 10},
+        {'text': 'Jawaharlal Nehru', 'score': 0},
+        {'text': 'Subhas Chandra Bose', 'score': 0},
+      ],
+    },
+    {
+      'questionText': 'What is the Capital of India?',
+      'answers': [
+        {'text': 'Tamil nadu', 'score': 0},
+        {'text': 'Mumbai', 'score': 0},
+        {'text': 'Punjab', 'score': 0},
+        {'text': 'Delhi', 'score': 10},
+      ],
+    },
+    {
+      'questionText': 'What city is the statue of liberty in?',
+      'answers': [
+        {'text': 'California', 'score': 0},
+        {'text': 'New York City', 'score': 10},
+        {'text': 'London', 'score': 0},
+        {'text': 'Delhi', 'score': 0},
+      ],
+    }, // Add more questions here
+  ];
+
+  void _answerQuestion(int score) {
+    setState(() {
+      _totalScore += score;
+      _questionIndex++;
+    });
+  }
+
+  void _restartQuiz() {
+    setState(() {
+      _questionIndex = 0;
+      _totalScore = 0;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Quiz App'),
+      ),
+      body: _questionIndex < _questions.length
+          ? Quiz(
+              questionIndex: _questionIndex,
+              questions: _questions,
+              answerQuestion: _answerQuestion,
+            )
+          : Result(_totalScore, _questions.length, _restartQuiz),
+    );
+  }
+}
+
+class Quiz extends StatelessWidget {
+  final int questionIndex;
+  final List<Map<String, dynamic>> questions;
+  final Function answerQuestion;
+
+  Quiz({
+    required this.questionIndex,
+    required this.questions,
+    required this.answerQuestion,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          questions[questionIndex]['questionText'],
+          style: TextStyle(fontSize: 20),
+        ),
+        ...(questions[questionIndex]['answers'] as List<Map<String, dynamic>>)
+            .map((answer) {
+          return ElevatedButton(
+            onPressed: () => answerQuestion(answer['score']),
+            child: Text(answer['text']),
+          );
+        }).toList(),
+      ],
+    );
+  }
+}
+
+class Result extends StatelessWidget {
+  final int totalScore;
+  final int totalQuestions;
+  final Function restartQuiz;
+
+  Result(this.totalScore, this.totalQuestions, this.restartQuiz);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Quiz Completed!',
+            style: TextStyle(fontSize: 24),
+          ),
+          Text(
+            'Your Score: $totalScore out of $totalQuestions * 10',
+            style: TextStyle(fontSize: 20),
+          ),
+          ElevatedButton(
+            onPressed: () => restartQuiz(),
+            child: Text('Restart Quiz'),
+          ),
+        ],
+      ),
+    );
+  }
+}
